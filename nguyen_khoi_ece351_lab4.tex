@@ -1,0 +1,103 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 4                                                        %
+% 30 September 2021                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 3}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{\today}
+
+\begin{document}
+\maketitle
+\pagebreak
+	
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+The goal of this lab was to breed familiarity with convolution by using it to compute the step response to numerous functions.
+
+The step response to a function is its convolution with the unit step function, or, alternatively, the inverse Laplace transform of the Laplace transform of a function multiplied by 1/s.
+
+\section{Equations}
+Part 1 Equations
+\[h_{1}(t) = e^{-2t}[u(t) - u(t-3)]\]
+\[h_{2}(t) = u(t - 2) - u(t - 6)\]
+\[h_{3}(t) = cos(\omega _{0}t) u(t),f_{0} = 0.25 Hz,\omega _{0} = 2\pi f_{0}\]
+Part 2 Hand Calculated Step Responses
+\[h_{1,step}(t) = \frac{1}{2}[(1 - e^{-2t})u(t) - e^{-6}(1 - e^{-2(t - 3)})u(t - 3)]\]
+\[h_{2,step}(t) = (t - 2)u(t - 2) - (t - 6)u(t - 6)\]
+\[h_{3,step}(t) = \frac{1}{0.5\pi}sin(0.5\pi t) u(t)\]
+
+\section{Methodology}
+We first imported the step function u(t) and convolution function conv(f1, f2) from previous labs. We then defined h1(t), h2(t), and h3(t), implementing the Part 1 Equations from the Equations section of this report. These functions were then plotted in a single figure with a domain of -10 $\leq$ t $\leq$ 10.
+
+The next part of the lab involved plotting the step response with two differing methods: using the convolution function, and inputting hand-calculated step response functions. For the first half, we used the user-defined convolution function to convolve each of the three Part 1 Equations with u(t) and plotted these, and for the second half, we calculated by hand and then plotted the step responses for each of the three functions using the fact that $h_{n,step}(t) = L^{-1}\{H_{n}(s) * 1/s\}$, although we could have also used convolutions.
+
+\section{Results}
+Plotted below are the Part 1 Equations.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{part1task2plot1.png}
+	\\ Part 1, Task 2
+\end{figure}
+
+Plotted below are the step responses to the Part 1 Equations; the first figure shows the plots of the user-defined convolutions, and the second the plots of the hand-calculated step responses.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{part2task1plot1.png}
+	\\ Part 2, Task 1
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{part2task2plot1.png}
+	\\ Part 2, Task 2
+\end{figure}
+The plots for Task 1 and Task 2 of Part 2 match, as per specifications.
+
+\section{Error Analysis}
+The lab essentially went as planned, without much error to discuss. One point of confusion concerned the unexpected function-generation convolution behavior past t $>$ 10, which was eventually explained to be a consequence of the expanded domain being greater than that of the input functions to the convolution.
+
+\section{Questions}
+Given the simplicity of this lab, the expectations were exceedingly clear.
+
+\section{Conclusion}
+In this lab, we developed intimacy with convolution by two implementations: from a user-defined function, as well as verification through plotted hand-calculated convolutions. As was the case for the previous lab, guidance on proper domain sizing would have made this lab slightly more intuitive, although in this case it was not as prominent.
+
+\end{document}
