@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 5 Prelab                                                 %
+% 30 September 2021                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 5 Prelab}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{\today}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\section*{Tasks}
+Task 1
+\[\frac{V_{in}(s) - V_{out}(s)}{R} = sCV_{out}(s) + \frac{1}{sL}V_{out}(s)\]
+\[V_{in}(s)(\frac{1}{R}) = V_{out}(s)(\frac{1}{R} + sC + \frac{1}{sL})\]
+\[H(s) = \frac{V_{out}(s)}{V_{in}(s)} = \frac{\frac{1}{R}}{\frac{1}{R} + sC + \frac{1}{sL}} = \frac{\frac{s}{R}}{\frac{s}{R} + s^{2}C + \frac{1}{L}} = \frac{\frac{1}{RC}s}{s^{2} + \frac{1}{RC}s + \frac{1}{LC}}\]
+Task 2
+
+\[h(t) = L^{-1}\{H(s)\} = L^{-1}\{\frac{\frac{1}{RC}s}{s^{2} + \frac{1}{RC}s + \frac{1}{LC}}\}\]
+\[\rho = -\frac{1}{2RC} + \frac{1}{2}\sqrt{(\frac{1}{RC})^2 - 4*\frac{1}{LC}}\]
+\[g = \frac{1}{RC}s| _{s = \rho}\]
+\[R = 1k\Omega, L = 27mH, C = 100nF\]
+\[\rho = -5000 + j18585, g = 19.25\angle105^{\circ}\]
+\[y_{s}(t) = \frac{|g|}{\omega}e^{\alpha t}sin(\omega t + \angle g)u(t)\]
+\[h(t) = y_{s}(t) = \frac{19.25}{18525}e^{-5000t}sin(18585t + 105^{\circ})u(t) = 0.001036e^{-5000t}sin(18585t + 105^{\circ})u(t)\]
+
+\end{document}

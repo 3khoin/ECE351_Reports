@@ -1,0 +1,111 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 5                                                        %
+% 7 October 2021                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 5}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{7 October 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+The goal of this lab was to find the time-domain response of an RLC bandpass to impulse and step inputs using Laplace transforms. This lab employed the scipy.signal.impulse() and scipy.signal.step() functions, as well as the previously user-defined step function u(t).
+
+\section{Equations}
+Transfer function
+\[H(s) = \frac{V_{out}(s)}{V_{in}(s)} = \frac{\frac{1}{RC}s}{s^{2} + \frac{1}{RC}s + \frac{1}{LC}}\]
+\[R = 1k\Omega, L = 27mH, C = 100nF\]
+Impulse response
+\[h(t) = y_{s}(t) = \frac{19.25}{18525}e^{-5000t}sin(18585t + 105^{\circ})u(t) = 0.001036e^{-5000t}sin(18585t + 105^{\circ})u(t)\]
+Final Value Theorem
+\[ \lim_{t\to\infty}\{f(t)\} = \lim_{s\to 0} \{sF(s)\}\]
+
+The final equations for H(s) and h(t) were calculated in the prelab.
+
+\section{Methodology}
+We first implemented the impulse response h(t) equation, solved for by hand in the prelab, as a user-defined function. We then plotted the h(t) function from 0 $\leq$ t $\leq$ 1.2 ms. We also used the scipy.signal.impulse() function to plot the same impulse response.
+
+We plotted the step response of H(s) from 0 $\leq$ t $\leq$ 1.2 ms using the imported scipy.signal.step() function. We then invoked the Final Value Theorem for the resulting step response in the Laplace domain.
+
+\section{Results}
+Plotted below is the transfer function h(t), plotted two different ways. They are identical, as per specification.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{part1task1plot1.png}
+	\\ Part 1, Task 1
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.9]{part1task2plot1.png}
+	\\ Part 1, Task 2
+\end{figure}
+
+Plotted below is the step response of H(s), using the scipy.signal.step() function.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=1.1]{part2task1plot1.png}
+	\\ Part 2, Task 1
+\end{figure}
+
+Using the final value theorem,
+\[ \lim_{t\to\infty}\{f(t)\} = \lim_{s\to 0} \{sF(s)\}\]
+\[ \lim_{t\to\infty}\{h_{step}(t)\} = \lim_{s\to 0} \{sH(s)u(s)\} = 0\]
+
+This matches the plot from Part 1 Task 2, where the plot slowly converges to 0 as t increases.
+
+\section{Error Analysis}
+The lab proceeded with essentially no errors when following the proper procedure.
+
+\section{Questions}
+\begin{enumerate}
+	\item The Final Value Theorem results can be explained by damping, which is caused by the impedance of the circuit (stemming from the resistor, inductor, and capacitor). The impedance slowly decreases the resonance of the signal in the circuit until it gets completely damped out, and hence approaches 0.
+	\item The directions for this lab were straightforward.
+\end{enumerate}
+
+\section{Conclusion}
+In this lab, we worked on finding impulse and step inputs using Laplace transforms, and studied how such would affect the time-domain response of an RLC bandpass filter. Although Laplace transforms were connected more closely to the work done in the main ECE 350 class, studying the bandpass plots was arguably more significant from an electrical/computer engineering perspective, as well as seguing into work in the frequency domain.
+
+\end{document}
