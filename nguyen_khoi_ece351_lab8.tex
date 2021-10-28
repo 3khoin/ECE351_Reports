@@ -1,0 +1,116 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 8                                                        %
+% 28 October 2021                                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 8}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{28 October 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+The goal of this lab was to compute the coefficients of a Fourier series and verify these calculations with Python.
+
+\section{Equations}
+\[x(t) = \frac{1}{2}a_{0} + \sum_{k=1}^{\infty}a_{k}cos(k\omega_{o}t) + b_{k}sin(k\omega_{o}t) \]
+\[\omega _{0} = \frac{2\pi}{T}\]
+\[a_{k} = \frac{2}{T}*2\int_{0}^{T/2} cos(k\omega_{o}t) \,dt = 0\]
+\[b_{k} = \frac{2}{T}*2\int_{0}^{T/2} sin(k\omega_{o}t) \,dt = \frac{4}{k\pi}sin^2(\frac{k\pi}{2})\]
+\[x(t) = \sum_{k=1}^{\infty} \frac{4}{k\pi}sin^2(\frac{k\pi}{2})sin(k\omega_{o}t) = \frac{4}{\pi}\sum_{k=1}^{\infty}\frac{1}{k}sin^2(\frac{k\pi}{2})sin(k\omega_{o}t)\]
+
+\section{Methodology}
+The Fourier series for this lab was calculated using the following square wave function.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{squarewave}
+\end{figure}
+
+In the prelab, we calculated the expressions for $a_{k}$ and $b_{k}$; we found that the $a_{k}$ term reduces to 0 because the function is entirely odd, with no even terms. There was also no offset, so the $a_{0}$ term also reduced to 0. Hence, the final Fourier series was just the sum of the $b_{k}$ terms.
+
+The $b_{k}$ term was then inserted into Spyder and the values for $b_{1}$, $b_{2}$ $b_{3}$ were found. Calculations for $a_{0}$ and $a_{1}$ were not necessary since we know them to be 0. We then plotted the Fourier series approximation for the square wave using values of N = \{1, 3, 15, 50, 150, 1500\}, using T = 8 s and a domain of 0 $\leq$ t $\leq$ 20 s.
+
+\section{Results}
+\begin{lstlisting}[language=Python]
+b(1): 1.2732395447351628
+b(2): 9.547767314442451e-33 # This approximates to 0.
+b(3): 0.4244131815783876
+\end{lstlisting}
+
+Implementing a user-defined function for $b_{k}$, we printed the values of the first 3 terms. Again, $a_{k}$ is known to be 0 for all terms, so no terms were printed.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{plot1}
+	\includegraphics[scale=0.45]{plot2}
+\end{figure}
+
+The plots above represent the square wave Fourier series for N = \{1, 3, 15, 50, 150, 1500\}. The series was implemented using the following function:
+
+\begin{lstlisting}[language=Python]
+def x(t, N):
+	y = 0
+	for k in range(1, N + 1):
+		y += b(k) * np.sin(k * 2 * np.pi * t/ T)
+	return y
+\end{lstlisting}
+
+The function returns the sum of terms of $x_{k}(t)$ all the way up to N.
+
+\section{Error Analysis}
+No particular errors or matters of concern were brought up during the lab.
+
+\section{Questions}
+\begin{enumerate}
+	\item x(t) is an odd function. Examining x(t), we can see that it consists of the $b_{k}$ term, $\frac{4}{k\pi}sin^2(\frac{k\pi}{2})$, and the sine term $sin(k\omega_{o}t)$. The first term is a squared function, and is even; x(-t) = x(t). The sine function is odd; x(-t) = -x(t). An odd function multiplied by an even function will be odd; hence, x(t) is odd.
+	\item As was demonstrated in the prelab, $a_{k}$ will be 0 for all values of k, since the function is not even, so there is no relevant $a_{k}cos(k\omega{o}t)$ term.
+	\item The square wave Fourier series approximation grows closer and closer to being shaped like an actual square wave as N increases. One limitation of the approximation can be seen at the edges of the rectangular waveform; before entering and exiting the approximated top edge of the waveform, a sudden jump must be made.
+	\item As N increases, the additional coefficient terms being added are increasing in frequency while decreasing in magnitude, which translates graphically to a flatter waveform.
+	\item The clarity of the tasks, expectations, and lab deliverables was exceptionally clear for this lab.
+\end{enumerate}
+
+\section{Conclusion}
+In this lab, although no new tools in particular was explored in Python, we learned to use Python to assist in the calculation of the coefficients in a Fourier series and plot the ensuing approximations. Although the Fourier series does have limitations, it is very close in its ability to replicate just about any periodic waveform.
+
+\end{document}
