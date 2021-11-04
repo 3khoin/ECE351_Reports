@@ -1,0 +1,60 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 10 Prelab                                                %
+% 4 November 2021                                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 10 Prelab}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{4 November 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\[H(s) = \frac{\frac{1}{RC}s}{s^{2} + \frac{1}{RC}s + \frac{1}{LC}}\]
+
+\[H(j\omega) = \frac{j\omega\frac{1}{RC}}{(j\omega)^{2} + j\omega \frac{1}{RC} + \frac{1}{LC}} = \frac{j \frac{\omega}{RC}}{\frac{1}{LC} - \omega^{2} + j\frac{\omega}{RC}}\]
+
+\[|H(j\omega)| = \frac{\frac{\omega}{RC}}{\sqrt{(\frac{1}{LC} - \omega^2)^{2} + (\frac{\omega}{RC})^{2}}}\]
+
+\[\angle H(j\omega) = tan^{-1}(\frac{1}{\frac{\omega}{RC}}) - tan^{-1}(\frac{\frac{1}{LC} - \omega^{2}}{\frac{\omega}{RC}})\]
+	
+\end{document}

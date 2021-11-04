@@ -1,0 +1,157 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 9                                                        %
+% 4 November 2021                                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 9}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{4 November 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+The goal of this lab was to use fast Fourier transforms in Python.
+
+\section{Equations}
+Task 1:
+\[x(t) = cos(2\pi t)\]
+Task 2:
+\[x(t) = 5sin(2\pi t)\]
+Task 3:
+\[x(t) = 2cos((2\pi * 2t) - 2) + sin^{2}((2\pi * 6t) + 3)\]
+From Lab 8:
+\[x(t) = \sum_{k=1}^{\infty} \frac{4}{k\pi}sin^2(\frac{k\pi}{2})sin(k\omega_{o}t)\]
+
+\section{Methodology}
+We first implemented the Fast Fourier Transform as a user-defined function with the provided code and added return values. We then plotted Task 1, 2, and 3 equations (listed in Equations) with a domain of 0 $\leq$ t < 2 s. In the same subplot, we plotted the magnitude and phase of the equations using the user-defined FFT, with a sampling frequency of fs = 100. We then modified our FFT function to filter out phases of X\_mag < 1e-10 and replotted the equations. We created the same format of plot for the Fourier series approximation of the square wave from Lab 8 for N = 15, with a new domain of 0 $\leq$ t < 16 s, and T = 8.
+
+\section{Results}
+The Fast Fourier Transform user-defined function is listed down below, as well as the modified function that filters all elements of X\_mag < 1e-10.
+
+\begin{lstlisting}[language=Python]
+def fft(x):
+	N = len(x)
+	X_fft = scipy.fftpack.fft(x)
+	X_fft_shifted = scipy.fftpack.fftshift(X_fft)
+	
+	freq = np.arange(-N/2, N/2) * fs/N
+	
+	X_mag = np.abs(X_fft_shifted)/N
+	X_phi = np.angle(X_fft_shifted)
+	return freq, X_mag, X_phi
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def fft_new(x):
+	N = len(x)
+	X_fft = scipy.fftpack.fft(x)
+	X_fft_shifted = scipy.fftpack.fftshift(X_fft)
+	
+	freq = np.arange(-N/2, N/2) * fs/N
+	
+	X_mag = np.abs(X_fft_shifted)/N
+	X_phi = np.zeros(len(X_mag))
+	# New
+	for i in range(len(X_mag)):
+		if( X_mag[i] > 1e-10 ):
+			X_phi[i] = np.angle(X_fft_shifted[i])
+	return freq, X_mag, X_phi
+\end{lstlisting}
+
+Below are the plot figures for Task 1, 2, and 3, as well as the Task 4 modified plots for the former 3 with the modified FFT function used. Finally, the Fourier series approximation of the square wave from Lab 8 is plotted with the same parameters, except with a domain of 0 $\leq$ t < 16 instead.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{plot1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot2}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot3}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot5}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot6}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot7}
+\end{figure}
+
+\section{Error Analysis}
+Two minor issues came to light during this lab. Firstly, a non-even time scale (eg. the maximum x value in the domain is set to 2 + step size instead of just 2) caused the graph to use the uneven intervals to create a strangely shifted and unreadable magnitude/phase plot. The values were fixed; it was realized that the upper x value being uneven made all the intervals become slightly shifted (eg. a value would be placed at 0.5 + some residue instead of just 0.5). Secondly, it had to be figured out how to plot five plots on a three-plot figure; it was found out that one could just plot the first plot with a width of two, and the others with a width of one.
+
+\section{Questions}
+\begin{enumerate}
+	\item If fs is lowered, the resolution of the graph as well as the noise in the phase plot is lowered; likewise, if increased, the graph resolution is increased, but there is also more noise in the phase plot.
+	\item Eliminating the small phase magnitudes allows for the viewing of only the phases directly corresponding to the important locations in the magnitude plot.
+	\item The Fourier transforms of cosine and sine are listed below.
+	\[\mathcal{F}\{cos(2\pi f_{0}t)\} = \frac{1}{2}[\delta (f - f_{0}) + \delta (f - f_{0})]\]
+	\[\mathcal{F}\{sin(2\pi f_{0}t)\} = j\frac{1}{2}[\delta (f - f_{0}) - \delta (f - f_{0})]\]
+	For Task 1 ($cos(2\pi t)$), the resulting Fourier transform is $\frac{1}{2}[\delta (f - 1) + \delta (f - 1)]$. For Task 2, it becomes $\frac{5}{2}[\delta (f - 1) - \delta (f - 1)]$. If one looks at the magnitude plots for Task 1 and Task 2, those correspond exactly to these equations. The Task 1 plot is described by the equation here, whereas since the plot is a magnitude plot, the Task 2 plot is described by the equation here, except shifted into the positive and real domain.
+	\item The lab tasks, expectations, and deliverables were as per usual clear and not problematic.
+\end{enumerate}
+
+\section{Conclusion}
+This lab introduced the Fast Fourier transform in Python. Using the FFT function for the magnitude of a function (and, with a small modification, the phase), we can easily discern and verify the Fourier transform of the function (limited to sinusoidals in this case).
+
+\end{document}
