@@ -1,0 +1,114 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 11                                                       %
+% 18 November 2021                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 11}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{18 November 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+	
+\section{Introduction}
+The goal for this lab was to utilize Python's built-in functions as well as a provided function to perform analysis on a discrete system.
+
+\section{Equations}
+\[y[k] = 2x[k] - 40x[k-1] + 10y[k-1] - 16y[k-2]\]
+
+\section{Methodology}
+Using the causal discrete function listed in the Equations section with y[k] as the output and x[k] as the input, with the system at rest, we derived the expression for H(z) = $\frac{Y(z)}{X(z)}$. From the H(z) expression, we used partial fraction expansion and the inverse Z-transform to find h[k].
+
+\[Y(z) = 2X(z) - 40z^{-1}X(z) + 10z^{-1}Y(z) - 16z^{-2}Y(z)\]
+
+\[Y(z)(1 - 10z^{-1} + 16z^{-2} = X(z)(2 - 40z^{-1}))\]
+
+\[H(z) = \frac{Y(z)}{X(z)} = \frac{2 - 40z^{-1}}{1 - 10z^{-1} + 16z^{-2}} = \frac{2z^{2} - 40z}{z^{2} - 10z + 16}\]
+
+\[\frac{H(z)}{z} = \frac{2z - 40}{(z-2)(z-8)}\]
+
+\[A = \frac{2z - 40}{z - 8}\rvert_{z = 2} = 6, B = \frac{2z - 40}{z - 2}\rvert_{z = 8} = -4\]
+
+\[\frac{H(z)}{z} = 6\frac{1}{z - 2} - 4\frac{1}{z - 8}; H(z) = 6\frac{z}{z - 2} - 4\frac{z}{z - 8}\]
+
+\[h[k] = Z^{-1}\{H(z)\} = (6 * 2^{k}u[k] - 4 * 8^{k})u[k]\]
+
+We then verified the values we obtained for A and B in our partial fraction expansion using the scipy.signal.residuez() function$^{[1]}$.
+
+A zplane() function was provided for obtaining the pole-zero plot for $\frac{H(z)}{z}$. We afterwards plotted the magnitude and phase responses of $\frac{H(z)}{z}$ using the scipy.signal.freqz() function, with the parameter whole = True.
+
+\section{Results}
+The pole-zero plot for $\frac{H(z)}{z}$ is shown below, with poles at 2 and 8, and a zero at 20, which matches the equation for the system.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot1}
+\end{figure}
+
+Below are the magnitude and phase responses of $\frac{H(z)}{z}$ plotted.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot2}
+\end{figure}
+
+\section{Error Analysis}
+The lab was straightforward with little room for error.
+
+\section{Questions}
+\begin{itemize}
+	\item H(z) is not stable. Looking at the zero-pole plot, the poles are completely outside of the unit circle, in which all stable pole values are contained. We can further verify this with examination of the equation h[k], in which the k-exponent values are 2 and 8, which will increase to infinity over time.
+	\item The clarity of the lab tasks, expectations and deliverables was good as per usual.
+\end{itemize}
+
+\section{Conclusion}
+This lab focused on using Z-transforms and Python tools to perform analysis on a discrete system. In addition to verifying our hand calculations, we used Python tools to graphically confirm the behavior of our discrete system; in this case, we saw that the transfer function would be unstable.
+
+\section{Appendix}
+\begin{lstlisting}[language=Python]
+ r: [ 6. -4.]
+p: [2. 8.]
+k: []
+\end{lstlisting}
+
+\end{document}
