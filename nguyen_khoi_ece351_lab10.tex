@@ -1,0 +1,115 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Lab 10                                                       %
+% 11 November 2021                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Lab 10}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{11 November 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+The goal of this lab was to become familiar with Python's set of frequency response tools and use them to construct Bode plots for signals.
+
+\section{Equations}
+\[H(s) = \frac{\frac{1}{RC}s}{s^{2} + \frac{1}{RC}s + \frac{1}{LC}}\]
+
+\[|H(j\omega)| = \frac{\frac{\omega}{RC}}{\sqrt{(\frac{1}{LC} - \omega^2)^{2} + (\frac{\omega}{RC})^{2}}}\]
+
+\[\angle H(j\omega) = tan^{-1}(\frac{\frac{\omega}{RC}}{1}) - tan^{-1}(\frac{\frac{\omega}{RC}}{\frac{1}{LC} - \omega^{2}})\]
+
+\[x(t) = cos(2\pi * 100t) + cos(2\pi * 3024t) + sin(2\pi * 50000t)\]
+
+\section{Methodology}
+Using the transfer function H(s) described in the Equations section, we derived the magnitude and phase equations for H(s), and, using the matplotlib.pyplot.semilogx() function, plotted the two on a logarithmic scale (the magnitude equation had to be converted into dB). We then verified that our hand-calculated plots were correct with scipy.signal.bode(). We then used the con.bode() function from the "control" package to find the frequency response with respect to Hz.
+
+We then plotted the signal x(t) listed in Equations, with a sample frequency of 1e6 to ensure all 3 frequencies were captured, with a domain of 0 $\leq$ t $\leq$ 0.01 s. We then passed x(t) through H(s) by first converting H(s) into its z-domain equivalent with the scipy.signal.bilinear() function, and then passing the resulting transform as an argument into scipy.signal.lfilter() alongside x(t). The final output y(t) was then plotted with the same domain as the original x(t).
+
+\section{Results}
+The magnitude and phase plots of the transfer function are listed below, with the third plot below being the magnitude and phase plot with the domain in Hz frequency rather than rad/s.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.53]{plot1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.53]{plot2}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.53]{plot3}
+\end{figure}
+
+x(t) is plotted below, as well as y(t) which passes x(t) through H(s).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{plot5}
+\end{figure}
+
+\section{Error Analysis}
+One error that we were challenged to work through showed up when we initially attempted to plot the phase for H(s); after a certain frequency, the resulting phases would be shifted $\pi$ radians (180 degrees) from their intended location. To remedy this, we had to modify the phase function to subtract $\pi$ from the final result if it was above the threshold of $\frac{\pi}{2}$.
+
+\section{Questions}
+\begin{enumerate}
+	\item The Part 2 filtered output makes sense when we look at the magnitude portion of the Part 1, Task 3 Bode plot; we can see that it is passing most the frequency of 3e3 Hz. Since the time domain plotted is 0.01 s, since $\frac{30}{3e3}$ = 0.01, there should be about 30 periods in the Part 2, Task 4 plot (which there are).
+	\item The scipy.signal.bilinear() function maps a continuous time signal to a discrete one. This is necessary since Python plots use discrete values. The scipy.signal.lfilter() function passes an input signal through a given filter, which should be made discrete.
+	\item Using a different sampling frequency in scipy.signal.bilinear() than was used for the time-domains signal results in either a signal that is too noisy or one that has filtered too many frequencies out.
+	\item The lab tasks, expectations, and deliverables were very clear.
+\end{enumerate}
+
+\section{Conclusion}
+This lab introduced the methods with which to construct Bode plots and analyze Bode plots and signals in the frequency domain. With these tools, we were able to further understand how signal filtering operates.
+
+\end{document}
