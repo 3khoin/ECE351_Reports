@@ -1,0 +1,199 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                              %
+% Khoi Nguyen                                                  %
+% ECE 351                                                      %
+% Final Project                                                %
+% 9 December 2021                                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,a4,titlepage]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{codeblue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+\graphicspath{{./images/}}
+
+\title{ECE 351 - Final Project}
+\author{Khoi Nguyen \\ https://github.com/3khoin}
+\date{9 December 2021}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+The goal for this lab was to design an analog filter circuit, meeting the following specifications:
+\begin{itemize}
+	\item The signal that should be passed is within the range of 1.8 kHz $\leq$ f $\leq$ 2 kHz. The information within this range should be attenuated by less than -0.3 dB.
+	\item There exists a low-frequency noise which should be attenuated by at least -30 dB.
+	\item There exists a high-frequency noise which should be attenuated by at least -21 dB.
+	\item All noise existing at frequencies greater than 100 kHz should be completely attenuated, defined as having a magnitude less than 0.05 V.
+\end{itemize}
+
+For this lab, we decided to use the transfer function from this RLC circuit:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=1]{rlccircuit}
+	\\ The transfer function, listed in the Equations section, is defined as $\frac{V_{out}}{V_{in}}$.
+\end{figure}
+
+This circuit constitutes an RLC band pass filter. Our task was, given the frequency range to be passed, find R, L, and C that would result in an appropriate cutoff frequency, bandwidth, and quality factor to meet specifications.
+
+\section{Equations}
+Circuit transfer function
+\[H(s) = \frac{\frac{1}{RC}s}{s^{2} + \frac{1}{RC}s + \frac{1}{LC}}\]
+Transfer function magnitude
+\[|H(j\omega)| = \frac{\frac{\omega}{RC}}{\sqrt{(\frac{1}{LC} - \omega^2)^{2} + (\frac{\omega}{RC})^{2}}}\]
+Conversion to decibels
+\[|H(j\omega)| (dB) = 20log|H(j\omega)|\]
+
+\section{Methodology}
+Before the actual filter design, we first examined the unfiltered signal itself in Python.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{unfiltered}
+	\\ The unfiltered signal.
+\end{figure}
+
+We then used a Fast Fourier Transform function in order to analyze the noise frequencies as well as the specified frequency range of the information signal. We focused on four specific ranges: 0 $\leq$ f $\leq$ 1.8 kHz, 1.8 kHz $\leq$ f $\leq$ 2 kHz, 2 kHz $\leq$ f $\leq$ 100 kHz, and f $>$ 100 kHz. We found four specific frequencies for the noise: 60 Hz, 49.9 kHz, 50 kHz, and 51 kHz. The frequency range had values between and including 1.8 and 2 kHz.
+
+Beginning the design of our band pass filter, we first needed to determine an appropriate cutoff frequency for the specified range of 1.8 kHz $\leq$ f $\leq$ 2 kHz. The natural answer would be that calculated from the midpoint of the range, so we defined $\omega_{0}$ = 1.9 kHz. The bandwidth is defined in specifications as 200 Hz, but for practical purposes can be made slightly more generous, since there are Fourier magnitudes exactly on the borders of the frequency range.
+
+We then moved to the calculations of R, L, and C. Calculating the 0 dB drop (at which the magnitude should be at its highest point) for $|H(j\omega)|$, $20log|H(j\omega)|_{|H(j\omega)| = 1}$ = 0. Examining the magnitude equation, we can see that $|H(j\omega)|$ equals 1 when $\sqrt{(\frac{1}{LC} - \omega^2)^2 + (\frac{\omega}{RC})^2}$ = $\sqrt{(\frac{\omega}{RC})^2}$, so $(\frac{1}{LC} - \omega^2)^2$ = 0. Therefore, $\omega_{0}$ = $\frac{1}{\sqrt{LC}}$. Since specifications state that the signal within the given range should be attenuated by less than -0.3 dB, we need to find the -0.3 dB drop point: $20log|H(j\omega)|_{|H(j\omega)| = 0.967}$ = -0.291, which is close to -0.3 dB with room for error. 0.967 = $\frac{1}{1.034}$ = $\frac{1}{\sqrt{1.0687}}$, so $|H(j\omega)|$ equals 0.967 when when $\sqrt{(\frac{1}{LC} - \omega^2)^2 + (\frac{\omega}{RC})^2}$ = $\sqrt{1.0687(\frac{\omega}{RC})^2}$, and $(\frac{1}{LC} - \omega^2)^2$ = $0.0687(\frac{\omega}{RC})^2$. Simplifying, $\frac{1}{LC} - \omega^2$ = $0.262\frac{\omega}{RC}$, and using the quadratic formula, $\omega_{-0.3dB} = \frac{0.262}{2RC} \pm \sqrt{(\frac{0.262}{2RC})^2 + \frac{1}{LC}}$. The -0.3 dB bandwidth is the difference between the two -0.3 dB frequencies, or BW = $\frac{0.262}{RC}$.
+
+We set a slightly more generous bandwidth, 210 Hz, and, to solve for L and C, used a standard 1 k$\Omega$ resistor to begin with. In the bandwidth equation, we obtained the value of C = 200 nF. Then, using the cutoff frequency equation with $\omega_{0}$ = 1.9 kHz, L = 35.1 mH.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=1]{rlccircuit2}
+	\\ The RLC circuit with calculated values for R, L, and C.
+\end{figure}
+
+With R, L, and C calculated, we proceeded to implement the transfer function for our RLC band pass into Python. We constructed Bode plots using the transfer function H(s) and our calculated component values, and demonstrated that our filter attenuated the entire frequency range between 1.8 and 2 kHz by less than -0.3 dB. Separate Bode plots showed that the 60 Hz noise is attenuated by around -37.5 dB, and the upper frequency range noise is attenuated by more than -35.8 dB. Frequencies past 100 kHz are attenuated by at least -42 dB.
+
+With the filter design complete, the last step was proving that our filter met specifications by using it to filter the original input signal. We examined the new filtered signal:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{filtered}
+	\\ The filtered signal.
+\end{figure}
+
+We performed the Fast Fourier Transform on the filtered signal, and analyzed the same ranges as before. The 1.8 $\leq$ f $\leq$ 2 kHz range was almost identical to before, while the noise magnitudes for 1.8 kHz $\leq$ f $\leq$ 2 kHz, 2 kHz $\leq$ f $\leq$ 100 kHz, and f $>$ 100 kHz were virtually nonexistent. Hence, our filter has been shown to fit the design specifications, and works as intended.
+
+\section{Results}
+Below are the plots of the Fast Fourier Transform used on the unfiltered signal.
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{unfilteredfft}
+	\\ Full-range view of the magnitude of the input signal for fs = 1e6.
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{unfilteredfft2}
+	\\ Magnitude of the input signal, shown at the specific ranges mentioned in the Methodology.
+\end{figure}
+
+For 0 $\leq$ f $\leq$ 1.8 kHz, we can see the 60 Hz noise. For 2 kHz $\leq$ f $\leq$ 100 kHz, we focused in on the three significant noises: at 49.9, 50, and 51 kHz. The specifics of the noise past 100 kHz do not really matter; if the 2 kHz $\leq$ f $\leq$ 100 kHz noise is filtered successfully by the bandpass, the noise past 100 kHz should also be attenuated appropriately.
+
+Listed below are the Bode plots for the transfer function H(s) that describes our RLC circuit shown in Methodology.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filterbode1}
+	\\ Full-range view of the filter magnitude.
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filterbode2}
+	\\ The filter magnitude from 1.8 $\leq$ f $\leq$ 2 kHz.
+\end{figure}
+
+Attenuation is shown to be kept at less than -0.3 dB.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filterbode3}
+	\\ The filter magnitude from 50 $\leq$ f $\leq$ 70 Hz.
+\end{figure}
+
+At 60 Hz, attenuation is about -37.5 dB.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filterbode4}
+	\\ The filtered signal.
+\end{figure}
+
+Above 49000 Hz, attenuation is above -35.75 dB.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filterbode5}
+	\\ The filtered signal.
+\end{figure}
+
+Above 100000 Hz, attenuation is above -42 dB.
+
+Below are the plots of the Fast Fourier Transform used on the unfiltered signal.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filteredfft}
+	\\ Full-range view of the magnitude of the output signal for fs = 1e6.
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{filteredfft2}
+	\\ Magnitude of the output signal, shown at the specific ranges mentioned in the Methodology.
+\end{figure}
+
+The magnitudes for 1.8 kHz $\leq$ f $\leq$ 2 kHz are almost identical to those prior to filtering the signal. Meanwhile, the noise in every other frequency range has been filtered to virtually zero. The noise past 100 kHz is certainly below 0.05 V in magnitude, as per specifications.
+
+\section{Error Analysis}
+Once the appropriate RLC circuit was constructed to form a band pass filter, the primary challenge for this lab concerned how we would be able to obtain specific values for R, L, and C to meet specifications without merely using guess and check. After some inspection, it turned out that the answer lay in calculating the magnitude of the transfer function in terms of decibels, and using the magnitude to decibel equation to calculate a precise bandwidth and cutoff frequency. Once we calculated the expressions for the bandwidth and cutoff frequency, we were then left wondering how to calculate a precise R value. It turned out that the R value could be arbitrary, as long as L and C are computed accordingly; hence, we used an arbitrary R of 1 k$\Omega$ as an industry-standard resistor value.
+
+\section{Questions}
+\begin{enumerate}
+	\item I did not learn as much general Python as I thought I might entering this course; most functions were from specific libraries tailored towards engineering use. Regardless, I am not dissatisfied; I did learn a few important bits of Python syntax, such as how loops, function definitions, array sizes, and assignments are handled in Python. More importantly, the calculations and plotting done in this course contributed heavily to my understanding of data science and ECE in general; if I am to pursue analog further, I am sure the knowledge will be of great assistance.
+\end{enumerate}
+
+\section{Conclusion}
+In this lab, we were successfully able to design a filter meeting specifications for the information signal as well as the attenuation of unwanted noise, with a combination of FFT techniques from Lab 9, Bode plots from Lab 10, and signal filtering knowledge from way back in ECE 212. We learned in great detail of signal filtering and filter design, as well as how to identify and attune specific noise frequencies. Additionally, practicing being able to fulfill design specs should be of assistance in future industry employment.
+
+\end{document}
